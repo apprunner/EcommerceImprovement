@@ -1,0 +1,22 @@
+﻿@model List<ProductDetail>
+
+@{
+    ViewBag.Title = "AllStockChart";
+
+    List<ProductDetail> productDetails = (List<ProductDetail>)Model;
+}
+
+<h2>AllStockChart</h2>
+
+<div class="row">
+    <canvas id="StockBarChart"></canvas>
+</div>
+
+
+@section endJS{
+
+    @*@ChartHelpers.BarChart("StockBarChart", "產品庫存數量統計", Html.Raw(Json.Encode(LabelsList)), Html.Raw(Json.Encode(StocksList)), Html.Raw(Json.Encode(backgroundColors)), Html.Raw(Json.Encode(borderColors)))*@
+
+    @ChartHelpers.BarChart("StockBarChart", "產品庫存數量統計", productDetails)
+
+}

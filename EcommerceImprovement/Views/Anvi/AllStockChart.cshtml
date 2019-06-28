@@ -1,0 +1,95 @@
+﻿@model List<ProductDetail>
+
+@using EcommerceImprovement.Helpers
+
+@{
+    ViewBag.Title = "AllStockChart";
+
+    List<ProductDetail> productDetails = (List<ProductDetail>)Model;
+
+    //建立產品PDID標題
+    List<string> LabelsList = productDetails.Select(p => p.PDID).ToList();
+
+    //建立產品庫存數量
+    List<int> StocksList = productDetails.Select(p => p.Stock).ToList();
+
+    //計算背景色&外框顏色
+    int count = productDetails.Count;
+
+    string[] backgroundColors = new string[count];
+    string[] borderColors = new string[count];
+
+    int idx = 1;
+    for (int i = 0; i < count; i++)
+    {
+        switch (productDetails[i].Stock)
+        {
+            case int NotEnough5 when productDetails[i].Stock < 5:
+                idx = (int)ConstantData.StockEnough.NotEnough5;
+                backgroundColors[i] = ConstantData.BackgroundColor[idx];
+                borderColors[i] = ConstantData.BorderColor[idx];
+                //backgroundColors[i] = @"rgba(255, 99, 132, 0.2)";
+                //borderColors[i] = @"rgba(255, 99, 132, 1)";
+                break;
+            case int Enough5NotEnough10 when productDetails[i].Stock > 5 && productDetails[i].Stock < 10:
+                idx = (int)ConstantData.StockEnough.Enough5NotEnough10;
+                backgroundColors[i] = ConstantData.BackgroundColor[idx];
+                borderColors[i] = ConstantData.BorderColor[idx];
+
+                //backgroundColors[i] = @"rgba(255, 206, 86, 0.2)";
+                //borderColors[i] = @"rgba(255, 206, 86, 1)";
+                break;
+            default:
+                idx = (int)ConstantData.StockEnough.Enough10NotEnough20;
+                backgroundColors[i] = ConstantData.BackgroundColor[idx];
+                borderColors[i] = ConstantData.BorderColor[idx];
+
+                //backgroundColors[i] = @"rgba(75, 192, 192, 0.2)";
+                //borderColors[i] = @"rgba(75, 192, 192, 1)";
+                break;
+        }
+    }
+
+}
+
+<h2>AllStockChart</h2>
+
+<div class="row">
+    <canvas id="StockBarChart"></canvas>
+</div>
+
+
+@section endJS{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+    <script>
+        var ctx = document.getElementById("StockBarChart");
+        var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Encode(LabelsList)),
+                    datasets: [{
+                        label: '產品庫存數量統計',
+                        data: @Html.Raw(Json.Encode(StocksList)),
+                        backgroundColor: @Html.Raw(Json.Encode(backgroundColors)),
+                        borderColor: @Html.Raw(Json.Encode(borderColors)),
+                        borderWidth: 1
+                    }]
+                } ,
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                }
+            }
+        });
+    </script>
+}

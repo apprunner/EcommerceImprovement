@@ -1,0 +1,44 @@
+﻿@model List<BookMix>
+
+
+@{
+    ViewBag.Title = "Index";
+
+    var Books1 = Model.Where(x => x.Id == 1).Select(x => x.Books).FirstOrDefault();
+    var Books2 = Model.Where(x => x.Id == 2).Select(x => x.Books).FirstOrDefault();
+    var Books3 = Model.Where(x => x.Id == 3).Select(x => x.Books).FirstOrDefault();
+}
+
+<h2>Index</h2>
+
+<div class="well">
+    First
+</div>
+
+<ul>
+    @foreach (var item in Books1)
+    {
+        <li>@item.BookId, @item.BooksName</li>
+    }
+</ul>
+
+<div class="well">
+    Second
+</div>
+
+<ul>
+    @foreach (var item in Books2)
+    {
+        <li>@item.BookId, @item.BooksName</li>
+    }
+</ul>
+<div class="well">
+    Third
+</div>
+
+<ul>
+    @foreach (var item in Books3)
+    {
+        <li>@item.BookId, @item.BooksName</li>
+    }
+</ul>

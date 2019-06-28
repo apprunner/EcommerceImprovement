@@ -1,0 +1,111 @@
+﻿
+@helper BarChart(string canvasName, string title, IHtmlString dataLabel, IHtmlString Dataset, IHtmlString BackgroundColors, IHtmlString BorderColors)
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+    <script>
+        var context = document.getElementById("@canvasName");
+        var myChart = new Chart(context, {
+                type: 'bar',
+                data: {
+                    labels: @dataLabel,
+                    datasets: [{
+                        label: '@title',
+                        data: @Dataset,
+                        backgroundColor: @BackgroundColors,
+                        borderColor: @BorderColors,
+                        borderWidth: 1
+                    }]
+                } ,
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                }
+            }
+        });
+    </script>
+}
+
+@helper BarChart(string canvasName, string title, List<EcommerceImprovement.Models.ProductDetail> productDetails)
+{
+        //建立產品PDID標題
+    List<string> LabelsList = productDetails.Select(p => p.PDID).ToList();
+
+    //建立產品庫存數量
+    List<int> StocksList = productDetails.Select(p => p.Stock).ToList();
+
+    //計算背景色&外框顏色
+    int count = productDetails.Count;
+
+    string[] backgroundColors = new string[count];
+    string[] borderColors = new string[count];
+
+    int idx = 1;
+    for (int i = 0; i < count; i++)
+    {
+        switch (productDetails[i].Stock)
+        {
+            case int NotEnough5 when productDetails[i].Stock < 5:
+                idx = (int)EcommerceImprovement.Helpers.ConstantData.StockEnough.NotEnough5;
+                backgroundColors[i] = EcommerceImprovement.Helpers.ConstantData.BackgroundColor[idx];
+                borderColors[i] = EcommerceImprovement.Helpers.ConstantData.BorderColor[idx];
+                break;
+            case int Enough5NotEnough10 when productDetails[i].Stock > 5 && productDetails[i].Stock < 10:
+                idx = (int)EcommerceImprovement.Helpers.ConstantData.StockEnough.Enough5NotEnough10;
+                backgroundColors[i] = EcommerceImprovement.Helpers.ConstantData.BackgroundColor[idx];
+                borderColors[i] = EcommerceImprovement.Helpers.ConstantData.BorderColor[idx];
+                break;
+            default:
+                idx = (int)EcommerceImprovement.Helpers.ConstantData.StockEnough.Enough10NotEnough20;
+                backgroundColors[i] = EcommerceImprovement.Helpers.ConstantData.BackgroundColor[idx];
+                borderColors[i] = EcommerceImprovement.Helpers.ConstantData.BorderColor[idx];
+                break;
+        }
+    }
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+    <script>
+        var context = document.getElementById("@canvasName");
+        var myChart = new Chart(context, {
+                type: 'bar',
+                data: {
+                    labels: @(new HtmlString(Json.Encode(LabelsList))),
+                    datasets: [{
+                        label: '@title',
+                        data: @(new HtmlString(Json.Encode(StocksList))),
+                        backgroundColor:  @(new HtmlString(Json.Encode(backgroundColors))),
+                        borderColor: @(new HtmlString(Json.Encode(borderColors))),
+                        borderWidth: 1
+                    }]
+                } ,
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        }
+                    }],
+                }
+            }
+        });
+    </script>
+}
+
+
+
+
